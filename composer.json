@@ -1,0 +1,43 @@
+{
+    "name": "touhidurabir/laravel-model-sanitize",
+    "description": "A laravel package to handle sanitize process of model data to create/update model records.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Touhidur Rahman",
+            "email": "abircse06@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "Touhidurabir\\ModelSanitize\\": "src/"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4" : {
+            "Touhidurabir\\ModelSanitize\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^6.20",
+        "illuminate/support": "^8.54",
+        "illuminate/container": "^8.54",
+        "illuminate/database": "^8.54",
+        "illuminate/events": "^8.54"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Touhidurabir\\ModelSanitize\\ModelSanitizeServiceProvider"
+            ],
+            "aliases": {
+                "ModelUuid": "Touhidurabir\\ModelSanitize\\Facades\\ModelSanitize"
+            }
+        }
+    }
+}
