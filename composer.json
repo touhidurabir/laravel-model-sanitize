@@ -36,7 +36,7 @@
                 "Touhidurabir\\ModelSanitize\\ModelSanitizeServiceProvider"
             ],
             "aliases": {
-                "ModelUuid": "Touhidurabir\\ModelSanitize\\Facades\\ModelSanitize"
+                "ModelSanitize": "Touhidurabir\\ModelSanitize\\Facades\\ModelSanitize"
             }
         }
     }

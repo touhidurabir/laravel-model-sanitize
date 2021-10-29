@@ -1,4 +1,4 @@
-# Laravel Model UUID
+# Laravel Model Sanitize
 
 A simple package to sanitize model data to create/update table records.
 
