@@ -5,10 +5,41 @@ namespace Touhidurabir\ModelSanitize;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder;
 
 trait Sanitizable {
+
+    /**
+     * Shoud the sanitize be enabled
+     *
+     * @var bool
+     */
+    protected static $sanitizationEnabled = true;
+
+    
+    /**
+     * Disbale the model sanitation
+     *
+     * @return void
+     */
+    public static function disableSanitization() {
+
+        static::$sanitizationEnabled = false;
+    }
+
+
+    /**
+     * Enable the model sanitation
+     *
+     * @return void
+     */
+    public static function enableSanitization() {
+
+        static::$sanitizationEnabled = true;
+    }
+    
 
     /**
      * Sanitize data list to model fillables
@@ -76,11 +107,16 @@ trait Sanitizable {
      * Create a new Eloquent query builder for the model.
      *
      * @param  \Illuminate\Database\Query\Builder  $query
-     * @return \Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder|static
+     * @return \Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder|\Illuminate\Database\Eloquent\Builder|static
      */
     public function newEloquentBuilder($query) {
-        
-        return new SanitizableQueryBuilder($query);
+
+        if ( static::$sanitizationEnabled ) {
+
+            return new SanitizableQueryBuilder($query);
+        }
+
+        return new Builder($query);
     }
 
 

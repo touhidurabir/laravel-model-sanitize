@@ -35,7 +35,7 @@ User::create([
 It will throw an **\Illuminate\Database\QueryException** if the **data** column not present in the users table.
 
 ```bash
-Illuminate\Database\QueryException with message 'SQLSTATE[HY000] [2002] Connection refused (SQL: insert into `users` (`email`, `password`, `updated_at`, `created_at`) values (somemail@test.com, password, 2021-08-23 10:15:25, 2021-08-23 10:15:25))'
+Illuminate\Database\QueryException: SQLSTATE[HY000]: General error: 1 table users has no column named data (SQL: insert into "users" ("email", "password", "data", "updated_at", "created_at") values (somemail@mail.com, password, data, 2021-11-14 20:11:04, 2021-11-14 20:11:04))
 ```
 
 The **Sanitize** package target to make it easier to handle such case as follow by including the **Sanitizable** trait in the models
@@ -131,6 +131,13 @@ This will return back as such :
 ```
 
 The **sanitize** and **gibberish** methods can be used to check or manually sanitize and evaluate the in valid data that can be passed to create/update model records.
+
+It is also possible to **disable/enable** the sanitization process at the runtime using the static methods **disableSanitization** and **enableSanitization** . For example, 
+
+```php
+User::disableSanitization(); // disable the sanitization process
+User::enableSanitization();  // enable the sanitization process if previously disabled
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -2,11 +2,15 @@
 
 namespace Touhidurabir\ModelSanitize\Tests;
 
+use Exception;
 use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Touhidurabir\ModelSanitize\Tests\App\User;
+use Touhidurabir\ModelSanitize\Tests\App\State;
+use Touhidurabir\ModelSanitize\Tests\App\Nation;
 use Touhidurabir\ModelSanitize\Tests\App\Profile;
+use Touhidurabir\ModelSanitize\Tests\App\Address;
 use Touhidurabir\ModelSanitize\Facades\ModelSanitize;
 use Touhidurabir\ModelSanitize\ModelSanitizeServiceProvider;
 
@@ -228,6 +232,84 @@ class LaravelIntegrationTest extends TestCase {
         ]);
 
         $this->assertDatabaseHas('users', ['email' => 'newtestmail002@test.mail']);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_will_not_fill_guarded_attributes() {
+
+        $address = Address::create([
+            'address_line_1'    => '5435 marthas vanieyard',
+            'nation'            => 'US',
+            'extras'            => 'some extra data',
+        ]);
+
+        $this->assertNull($address->extras);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_will_only_fill_fillable_attributes() {
+
+        $nation = Nation::create([
+            'name'          => 'United States',
+            'code'          => 'US',
+            'description'   => 'some extra description',
+        ]);
+
+        $this->assertNull($nation->description);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_will_honour_both_guarded_and_fillable_if_defined() {
+
+        $state = State::create([
+            'name'          => 'New York',
+            'code'          => 'NY',
+            'city_counts'   => 12,
+            'description'   => 'some extra description',
+        ]);
+
+        $this->assertDatabaseHas('states', [
+            'name' => 'New York',
+            'code' => 'NY',
+        ]);
+        $this->assertNull($state->city_counts);
+        $this->assertNull($state->description);
+    }
+
+
+    /**
+     * @test
+     */
+    public function the_sanitization_process_can_be_disabled_at_run_time() {
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+
+        User::disableSanitization();
+
+        $user = User::create(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']);
+    }
+
+
+    /**
+     * @test
+     */
+    public function the_disabled_sanitization_process_can_be_enabled_at_run_time() {
+
+        User::disableSanitization();
+
+        User::enableSanitization();
+
+        $user = User::create(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']);
+        $this->assertDatabaseHas('users', ['email' => 'somemail@mail.com', 'password' => 'password']);
     }
     
 }
