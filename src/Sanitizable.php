@@ -55,7 +55,7 @@ trait Sanitizable {
                         ? $fillable 
                         : array_diff(
                             array_diff(
-                                Schema::getColumnListing($this->getTable()), 
+                                Schema::connection($this->getConnectionName())->getColumnListing($this->getTable()), 
                                 $this->getGuarded()
                             ), 
                             $this->getHidden()
