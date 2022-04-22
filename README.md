@@ -11,9 +11,9 @@ composer require touhidurabir/laravel-model-sanitize
 ```
 
 ## What is does ?
-The **Sanitize** package sanitize the passed **attributes** to proper model fillables at create or update. 
+The `Sanitize` package sanitize the passed `attributes` to proper model fillables at create or update. 
 
-A model has multiple table schema based attributed associated with it. When we try to create a new model record or update an existing model record, we must provide the an array attributes that is propelry mapped to those arrtibute or table columns names . For example 
+A model has table schema based multiple attributes associated with it. When we try to create a new model record or update an existing model record, we must provide the an array attributes that is propelry mapped to those arrtibute or table columns names . For example 
 
 ```php
 $user = User::create([
@@ -22,7 +22,7 @@ $user = User::create([
 ]);
 ```
 
-The above code will run without any issue as both the **email** and **password** column presents in the users table . But for the following code
+The above code will run without any issue as both the `email` and `password` column presents in the users table . But for the following code
 
 ```php
 User::create([
@@ -32,13 +32,13 @@ User::create([
 ]);
 ```
 
-It will throw an **\Illuminate\Database\QueryException** if the **data** column not present in the users table.
+It will throw an `\Illuminate\Database\QueryException` if the `data` column not present in the users table.
 
-```bash
+```sql
 Illuminate\Database\QueryException: SQLSTATE[HY000]: General error: 1 table users has no column named data (SQL: insert into "users" ("email", "password", "data", "updated_at", "created_at") values (somemail@mail.com, password, data, 2021-11-14 20:11:04, 2021-11-14 20:11:04))
 ```
 
-The **Sanitize** package target to make it easier to handle such case as follow by including the **Sanitizable** trait in the models
+The `Sanitize` package target to make it easier to handle such case as follow by including the `Sanitizable` trait in the models
 
 ```php
 $data = [
@@ -49,7 +49,7 @@ $data = [
 
 User::create($data);
 ```
-The above code will work if the **Sanitizable** trait is used in the **User** model class. it will sanitize the passed attributed to model fillables and table columns, thus removing the extra or non useable attributes from it . 
+The above code will work if the `Sanitizable` trait is used in the `User` model class. it will sanitize the passed attributed to model fillables and table columns, thus removing the `extra or non useable attributes` from it . 
 
 ## How it will be helpful ?
 
@@ -66,7 +66,7 @@ I personally use this appraoch in many of my laravel apps .
 
 ## Usage
 
-Use the trait **Sanitizable** in model where uuid needed to attach
+Use the trait `Sanitizable` in model where uuid needed to attach
 
 ```php
 use Touhidurabir\ModelSanitize\Sanitizable;
@@ -88,7 +88,7 @@ And thats all . it will automatically work for all the following methods
 
 This package also includes some helper methods that can be used to handle the sanitization process manually. 
 
-The **sanitize** static method will sanitize the given attributes list and retuen back the useable and valid attributes as an array 
+The `sanitize` static method will sanitize the given attributes list and retuen back the useable and valid attributes as an array 
 
 ```php
 $data = [
@@ -110,7 +110,7 @@ This will return back as such :
 ]
 ```
 
-The **gibberish** static method will sanitize the given attributes list and retuen back the gibberish/non userbale attributes as an array 
+The `gibberish` static method will sanitize the given attributes list and retuen back the gibberish/non userbale attributes as an array 
 
 ```php
 $data = [
@@ -130,9 +130,9 @@ This will return back as such :
 ]
 ```
 
-The **sanitize** and **gibberish** methods can be used to check or manually sanitize and evaluate the in valid data that can be passed to create/update model records.
+The `sanitize` and `gibberish` methods can be used to check or manually sanitize and evaluate the in valid data that can be passed to create/update model records.
 
-It is also possible to **disable/enable** the sanitization process at the runtime using the static methods **disableSanitization** and **enableSanitization** . For example, 
+It is also possible to `disable/enable` the sanitization process at the runtime using the static methods `disableSanitization` and `enableSanitization` . For example, 
 
 ```php
 User::disableSanitization(); // disable the sanitization process
