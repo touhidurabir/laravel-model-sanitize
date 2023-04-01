@@ -19,3 +19,6 @@ All notable changes to this project will be documented in this file.
 ## [1.1.1] - 2022-04-22
 - Merge pull request by [viicslen](https://github.com/viicslen) which set schema builder connection to the same connection as the model so that it can work properly with `Multi Tenant` application poplery.
 - Readme Update
+
+## [1.1.2] - 2023-04-01
+- Added Laravel 9 and 10 support
