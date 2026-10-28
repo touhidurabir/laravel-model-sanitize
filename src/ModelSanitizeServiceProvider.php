@@ -4,14 +4,15 @@ namespace Touhidurabir\ModelSanitize;
 
 use Illuminate\Support\ServiceProvider;
 
-class ModelSanitizeServiceProvider extends ServiceProvider {
-    
+class ModelSanitizeServiceProvider extends ServiceProvider
+{
     /**
      * Register any application services.
      *
      * @return void
      */
-    public function register() {
+    public function register()
+    {
 
     }
 
@@ -21,8 +22,9 @@ class ModelSanitizeServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot() {
+    public function boot()
+    {
 
     }
-    
+
 }

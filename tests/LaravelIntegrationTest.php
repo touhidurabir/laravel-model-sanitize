@@ -3,11 +3,8 @@
 namespace Touhidurabir\ModelSanitize\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
-use Exception;
 use ReflectionMethod;
 use Orchestra\Testbench\TestCase;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Touhidurabir\ModelSanitize\Tests\App\User;
 use Touhidurabir\ModelSanitize\Tests\App\State;
@@ -17,30 +14,32 @@ use Touhidurabir\ModelSanitize\Tests\App\Address;
 use Touhidurabir\ModelSanitize\Facades\ModelSanitize;
 use Touhidurabir\ModelSanitize\ModelSanitizeServiceProvider;
 
-class LaravelIntegrationTest extends TestCase {
-
+class LaravelIntegrationTest extends TestCase
+{
     /**
      * Get package providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageProviders($app) {
+    protected function getPackageProviders($app)
+    {
 
         return [
             ModelSanitizeServiceProvider::class,
         ];
-    }   
-    
-    
+    }
+
+
     /**
      * Override application aliases.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageAliases($app) {
-        
+    protected function getPackageAliases($app)
+    {
+
         return [
             'ModelSanitize' => ModelSanitize::class,
         ];
@@ -53,7 +52,8 @@ class LaravelIntegrationTest extends TestCase {
      * @param  Illuminate\Foundation\Application $app
      * @return void
      */
-    protected function defineEnvironment($app) {
+    protected function defineEnvironment($app)
+    {
 
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
@@ -75,10 +75,11 @@ class LaravelIntegrationTest extends TestCase {
      *
      * @return void
      */
-    protected function defineDatabaseMigrations() {
+    protected function defineDatabaseMigrations()
+    {
 
         $this->loadMigrationsFrom(__DIR__ . '/App/database/migrations');
-        
+
         $this->artisan('migrate', ['--database' => 'testbench'])->run();
 
         $this->beforeApplicationDestroyed(function () {
@@ -93,11 +94,12 @@ class LaravelIntegrationTest extends TestCase {
      * @param  string $method
      * @return void
      */
-    protected function skipIfBuilderMethodNotAcceptClosureValues(string $method) {
+    protected function skipIfBuilderMethodNotAcceptClosureValues(string $method)
+    {
 
         $type = (new ReflectionMethod(Builder::class, $method))->getParameters()[1]->getType();
 
-        if ( ! $type || strpos((string) $type, 'Closure') === false ) {
+        if (! $type || strpos((string) $type, 'Closure') === false) {
 
             $this->markTestSkipped("Eloquent Builder::{$method} does not accept Closure values on this Laravel version");
         }
@@ -108,7 +110,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function models_using_sanitizable_trait_will_have_access_to_static_methods() {
+    public function models_using_sanitizable_trait_will_have_access_to_static_methods()
+    {
 
         $this->assertTrue(method_exists('Touhidurabir\\ModelSanitize\\Tests\\App\\User', 'sanitize'));
         $this->assertTrue(method_exists('Touhidurabir\\ModelSanitize\\Tests\\App\\User', 'gibberish'));
@@ -121,7 +124,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function sanitize_method_will_return_array() {
+    public function sanitize_method_will_return_array()
+    {
 
         $this->assertIsArray(User::sanitize(['email' => 'somemail@mail.com', 'password' => 'password']));
         $this->assertIsArray(Profile::sanitize(['first_name' => 'first_name', 'last_name' => 'last_name']));
@@ -132,7 +136,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function gibberish_method_will_return_array() {
+    public function gibberish_method_will_return_array()
+    {
 
         $this->assertIsArray(User::gibberish(['email' => 'somemail@mail.com', 'data' => 'data']));
         $this->assertIsArray(Profile::sanitize(['first_name' => 'first_name', 'bio' => 'some bio']));
@@ -143,7 +148,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function sanitize_method_will_return_proper_attributes() {
+    public function sanitize_method_will_return_proper_attributes()
+    {
 
         $this->assertEquals(
             User::sanitize(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']),
@@ -161,7 +167,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function gibberish_method_will_return_non_useable_attributes() {
+    public function gibberish_method_will_return_non_useable_attributes()
+    {
 
         $this->assertEquals(
             User::gibberish(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']),
@@ -179,7 +186,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_filter_at_time_create() {
+    public function it_will_properly_filter_at_time_create()
+    {
 
         $user = User::create(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']);
         $this->assertDatabaseHas('users', ['email' => 'somemail@mail.com', 'password' => 'password']);
@@ -193,7 +201,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_filter_at_time_update() {
+    public function it_will_properly_filter_at_time_update()
+    {
 
         $user = User::create(['email' => 'somemail@mail.com', 'password' => 'password']);
         $user->update(['email' => 'newemail@test.com', 'data' => 'some data']);
@@ -206,7 +215,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_first_or_create() {
+    public function it_will_properly_sanitize_on_first_or_create()
+    {
 
         $user = User::firstOrCreate(['email' => 'newmail001@mail.com'], ['email' => 'newmail001@mail.com', 'password' => 'password', 'data' => 'some new data']);
 
@@ -218,7 +228,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_first_or_new() {
+    public function it_will_properly_sanitize_on_first_or_new()
+    {
 
         $user = user::firstOrNew(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'some data']);
 
@@ -230,7 +241,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_update_or_create() {
+    public function it_will_properly_sanitize_on_update_or_create()
+    {
 
         $user = User::updateOrCreate(['email' => 'newtestmail001@test.mail'], [
             'email' => 'newtestmail001@test.mail',
@@ -254,7 +266,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_first_or_create_with_closure_values() {
+    public function it_will_properly_sanitize_on_first_or_create_with_closure_values()
+    {
 
         $this->skipIfBuilderMethodNotAcceptClosureValues('firstOrCreate');
 
@@ -270,7 +283,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_first_or_new_with_closure_values() {
+    public function it_will_properly_sanitize_on_first_or_new_with_closure_values()
+    {
 
         $this->skipIfBuilderMethodNotAcceptClosureValues('firstOrNew');
 
@@ -287,7 +301,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_update_or_create_with_closure_values() {
+    public function it_will_properly_sanitize_on_update_or_create_with_closure_values()
+    {
 
         $this->skipIfBuilderMethodNotAcceptClosureValues('updateOrCreate');
 
@@ -309,7 +324,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_properly_sanitize_on_force_create() {
+    public function it_will_properly_sanitize_on_force_create()
+    {
 
         $user = User::forceCreate([
             'email' => 'newtestmail002@test.mail',
@@ -325,7 +341,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_not_fill_guarded_attributes() {
+    public function it_will_not_fill_guarded_attributes()
+    {
 
         $address = Address::create([
             'address_line_1'    => '5435 marthas vanieyard',
@@ -341,7 +358,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_only_fill_fillable_attributes() {
+    public function it_will_only_fill_fillable_attributes()
+    {
 
         $nation = Nation::create([
             'name'          => 'United States',
@@ -357,7 +375,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_will_honour_both_guarded_and_fillable_if_defined() {
+    public function it_will_honour_both_guarded_and_fillable_if_defined()
+    {
 
         $state = State::create([
             'name'          => 'New York',
@@ -379,7 +398,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_sanitization_process_can_be_disabled_at_run_time() {
+    public function the_sanitization_process_can_be_disabled_at_run_time()
+    {
 
         $this->expectException(\Illuminate\Database\QueryException::class);
 
@@ -393,7 +413,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_disabled_sanitization_process_can_be_enabled_at_run_time() {
+    public function the_disabled_sanitization_process_can_be_enabled_at_run_time()
+    {
 
         User::disableSanitization();
 
@@ -402,5 +423,5 @@ class LaravelIntegrationTest extends TestCase {
         $user = User::create(['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data']);
         $this->assertDatabaseHas('users', ['email' => 'somemail@mail.com', 'password' => 'password']);
     }
-    
+
 }
