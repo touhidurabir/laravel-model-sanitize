@@ -1,0 +1,70 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+        laravel: ['11', '12', '13']
+        include:
+          - laravel: '11'
+            testbench: '^9.0'
+          - laravel: '12'
+            testbench: '^10.0'
+          - laravel: '13'
+            testbench: '^11.0'
+        exclude:
+          - laravel: '13'
+            php: '8.2'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install dependencies
+        env:
+          # Every laravel/framework 11.x release carries a security advisory (Laravel 11 is past EOL),
+          # which Composer blocks by default. Allow them so Laravel 11 compatibility can still be tested.
+          COMPOSER_NO_BLOCKING: 1
+          COMPOSER_NO_SECURITY_BLOCKING: 1
+        run: composer update --prefer-dist --no-interaction --no-progress --with "orchestra/testbench:${{ matrix.testbench }}"
+
+      - name: Run tests
+        run: vendor/bin/phpunit
+
+  lint:
+    name: Code style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Check code style
+        run: composer lint
