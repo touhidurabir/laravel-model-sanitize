@@ -17,6 +17,66 @@ use Touhidurabir\ModelSanitize\ModelSanitizeServiceProvider;
 class LaravelIntegrationTest extends TestCase
 {
     /**
+     * The test models using the Sanitizable trait.
+     *
+     * @var array
+     */
+    protected $sanitizableModels = [
+        User::class,
+        Profile::class,
+        Address::class,
+        Nation::class,
+        State::class,
+    ];
+
+
+    /**
+     * Setup the test environment.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+
+        parent::setUp();
+
+        $this->enableSanitizationForAllModels();
+    }
+
+
+    /**
+     * Clean up the testing environment before the next test.
+     *
+     * The sanitization flag is static, so a test that disables it must not
+     * leak that state into the tests that run after it.
+     *
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+
+        $this->enableSanitizationForAllModels();
+
+        parent::tearDown();
+    }
+
+
+    /**
+     * Re-enable the sanitization on every test model
+     *
+     * @return void
+     */
+    protected function enableSanitizationForAllModels()
+    {
+
+        foreach ($this->sanitizableModels as $model) {
+
+            $model::enableSanitization();
+        }
+    }
+
+
+    /**
      * Get package providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
