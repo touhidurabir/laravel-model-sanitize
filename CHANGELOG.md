@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 - Code style formatted to PSR-12 with Laravel Pint (`composer format` / `composer lint`).
 - Replaced Travis CI with GitHub Actions (PHP 8.2–8.4 × Laravel 11/12/13, plus a code style check).
 - Tests no longer depend on their execution order: the static sanitization flag is reset before and after each test.
+- Fixed the `ModelSanitize` facade: its `model-sanitize` container key was never bound, so any facade call failed.
+  It now resolves to `Touhidurabir\ModelSanitize\ModelSanitizer`, which offers `sanitize($model, $attributes)` and
+  `gibberish($model, $attributes)` for a model class name or instance.
 
 
 ## [1.0.0] - 2021-08-14

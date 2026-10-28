@@ -139,6 +139,15 @@ User::disableSanitization(); // disable the sanitization process
 User::enableSanitization();  // enable the sanitization process if previously disabled
 ```
 
+The same helpers are also available through the `ModelSanitize` facade, which takes the model class name (or a model instance) as the first argument. The model must use the `Sanitizable` trait.
+
+```php
+use Touhidurabir\ModelSanitize\Facades\ModelSanitize;
+
+ModelSanitize::sanitize(User::class, $data);   // same as User::sanitize($data)
+ModelSanitize::gibberish(User::class, $data);  // same as User::gibberish($data)
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

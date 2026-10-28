@@ -484,4 +484,40 @@ class LaravelIntegrationTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'somemail@mail.com', 'password' => 'password']);
     }
 
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function the_facade_resolves_and_can_sanitize_for_a_given_model()
+    {
+
+        $attributes = ['email' => 'somemail@mail.com', 'password' => 'password', 'data' => 'data'];
+
+        $this->assertEquals(
+            ['email' => 'somemail@mail.com', 'password' => 'password'],
+            ModelSanitize::sanitize(User::class, $attributes)
+        );
+
+        $this->assertEquals(['data' => 'data'], ModelSanitize::gibberish(new User(), $attributes));
+
+        $this->assertEquals(
+            ['first_name' => 'first_name'],
+            \ModelSanitize::sanitize(Profile::class, ['first_name' => 'first_name', 'bio' => 'some bio'])
+        );
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function the_facade_rejects_models_not_using_the_sanitizable_trait()
+    {
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        ModelSanitize::sanitize(\Illuminate\Foundation\Auth\User::class, ['email' => 'somemail@mail.com']);
+    }
+
 }
