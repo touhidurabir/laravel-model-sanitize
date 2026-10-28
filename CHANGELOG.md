@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Laravel 11, 12 and 13 support added.
+- PHPUnit 10/11/12 support for tests.
+- Fixed fatal error on Laravel 12+/13 caused by `SanitizableQueryBuilder` method signatures (`firstOrCreate`, `firstOrNew`, `updateOrCreate`) being incompatible with the parent `Closure|array $values` parameter; `$values` given as a Closure is now sanitized too.
 
 
 ## [1.0.0] - 2021-08-14
