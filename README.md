@@ -148,6 +148,22 @@ ModelSanitize::sanitize(User::class, $data);   // same as User::sanitize($data)
 ModelSanitize::gibberish(User::class, $data);  // same as User::gibberish($data)
 ```
 
+## Upgrade note: extending `SanitizableQueryBuilder`
+
+This only affects apps that **subclass** `Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder` and override `updateOrCreate`, `firstOrCreate` or `firstOrNew`.
+
+To support Laravel 12 and 13, where these methods accept the values as `Closure|array`, the package declares the `$values` parameter **without a type**. A subclass that still declares it as `array $values` now fails with a fatal "declaration must be compatible" error, on every Laravel version. Drop the type in your override:
+
+```php
+// Before
+public function firstOrCreate(array $attributes = [], array $values = [])
+
+// After
+public function firstOrCreate(array $attributes = [], $values = [])
+```
+
+`$values` may then be a `Closure` on Laravel 12+, so call it (or pass it on to `parent::`) before using it as an array.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

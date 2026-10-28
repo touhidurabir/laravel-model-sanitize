@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - Fixed the `ModelSanitize` facade: its `model-sanitize` container key was never bound, so any facade call failed.
   It now resolves to `Touhidurabir\ModelSanitize\ModelSanitizer`, which offers `sanitize($model, $attributes)` and
   `gibberish($model, $attributes)` for a model class name or instance.
+- **Upgrade note:** apps that subclass `SanitizableQueryBuilder` and re-declare `updateOrCreate`, `firstOrCreate` or
+  `firstOrNew` with `array $values` must drop that type (use `$values = []`). The parent parameter is now untyped, so
+  the narrower `array` type is a fatal signature error; on Laravel 12/13 Laravel's own `Closure|array` signature
+  requires this anyway. See the README section "Upgrade note: extending `SanitizableQueryBuilder`".
 
 
 ## [1.0.0] - 2021-08-14
