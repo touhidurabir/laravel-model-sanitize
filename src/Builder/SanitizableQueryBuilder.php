@@ -2,20 +2,21 @@
 
 namespace Touhidurabir\ModelSanitize\Builder;
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder as BaseBuilder;
 
-class SanitizableQueryBuilder extends BaseBuilder {
-
+class SanitizableQueryBuilder extends BaseBuilder
+{
     /**
      * Create or update a record matching the attributes, and fill it with values.
      *
      * @param  array  $attributes
-     * @param  array  $values
+     * @param  \Closure|array  $values
      * @return \Illuminate\Database\Eloquent\Model|static
      */
-    public function updateOrCreate(array $attributes, array $values = []) 
+    public function updateOrCreate(array $attributes, $values = [])
     {
-        return parent::updateOrCreate($attributes, $this->model->sanitizeToModelFillable($values));
+        return parent::updateOrCreate($attributes, $this->sanitizeValues($values));
     }
 
 
@@ -23,12 +24,12 @@ class SanitizableQueryBuilder extends BaseBuilder {
      * Get the first record matching the attributes or create it.
      *
      * @param  array  $attributes
-     * @param  array  $values
+     * @param  \Closure|array  $values
      * @return \Illuminate\Database\Eloquent\Model|static
      */
-    public function firstOrCreate(array $attributes = [], array $values = []) 
+    public function firstOrCreate(array $attributes = [], $values = [])
     {
-        return parent::firstOrCreate($attributes, $this->model->sanitizeToModelFillable($values));
+        return parent::firstOrCreate($attributes, $this->sanitizeValues($values));
     }
 
 
@@ -36,12 +37,12 @@ class SanitizableQueryBuilder extends BaseBuilder {
      * Get the first record matching the attributes or instantiate it.
      *
      * @param  array  $attributes
-     * @param  array  $values
+     * @param  \Closure|array  $values
      * @return \Illuminate\Database\Eloquent\Model|static
      */
-    public function firstOrNew(array $attributes = [], array $values = []) 
+    public function firstOrNew(array $attributes = [], $values = [])
     {
-        return parent::firstOrNew($attributes, $this->model->sanitizeToModelFillable($values));
+        return parent::firstOrNew($attributes, $this->sanitizeValues($values));
     }
 
 
@@ -51,7 +52,7 @@ class SanitizableQueryBuilder extends BaseBuilder {
      * @param  array  $attributes
      * @return \Illuminate\Database\Eloquent\Model|$this
      */
-    public function create(array $attributes = []) 
+    public function create(array $attributes = [])
     {
         return parent::create($this->model->sanitizeToModelFillable($attributes));
     }
@@ -63,7 +64,7 @@ class SanitizableQueryBuilder extends BaseBuilder {
      * @param  array  $attributes
      * @return \Illuminate\Database\Eloquent\Model|$this
      */
-    public function forceCreate(array $attributes) 
+    public function forceCreate(array $attributes)
     {
         return parent::forceCreate($this->model->sanitizeToModelFillable($attributes));
     }
@@ -75,8 +76,29 @@ class SanitizableQueryBuilder extends BaseBuilder {
      * @param  array  $values
      * @return int
      */
-    public function update(array $values) 
+    public function update(array $values)
     {
         return parent::update($this->model->sanitizeToModelFillable($values));
+    }
+
+
+    /**
+     * Sanitize the given values, deferring the sanitization if values are given as a Closure.
+     *
+     * @param  \Closure|array  $values
+     * @return \Closure|array
+     */
+    protected function sanitizeValues($values)
+    {
+        if ($values instanceof Closure) {
+
+            $model = $this->model;
+
+            return function () use ($values, $model) {
+                return $model->sanitizeToModelFillable($values());
+            };
+        }
+
+        return $this->model->sanitizeToModelFillable($values);
     }
 }

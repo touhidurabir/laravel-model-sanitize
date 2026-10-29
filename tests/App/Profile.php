@@ -6,8 +6,8 @@ use Touhidurabir\ModelSanitize\Sanitizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Profile extends Model {
-
+class Profile extends Model
+{
     use SoftDeletes;
 
     use Sanitizable;

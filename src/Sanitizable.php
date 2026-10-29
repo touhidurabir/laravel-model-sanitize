@@ -2,15 +2,13 @@
 
 namespace Touhidurabir\ModelSanitize;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder;
 
-trait Sanitizable {
-
+trait Sanitizable
+{
     /**
      * Shoud the sanitize be enabled
      *
@@ -18,13 +16,14 @@ trait Sanitizable {
      */
     protected static $sanitizationEnabled = true;
 
-    
+
     /**
      * Disbale the model sanitation
      *
      * @return void
      */
-    public static function disableSanitization() {
+    public static function disableSanitization()
+    {
 
         static::$sanitizationEnabled = false;
     }
@@ -35,11 +34,12 @@ trait Sanitizable {
      *
      * @return void
      */
-    public static function enableSanitization() {
+    public static function enableSanitization()
+    {
 
         static::$sanitizationEnabled = true;
     }
-    
+
 
     /**
      * Sanitize data list to model fillables
@@ -47,17 +47,18 @@ trait Sanitizable {
      * @param  array   $data
      * @return array
      */
-    public function sanitizeToModelFillable(array $data) {
+    public function sanitizeToModelFillable(array $data)
+    {
 
         $fillable     = $this->getFillable();
 
-        $fillables = ! empty($fillable) 
-                        ? $fillable 
+        $fillables = ! empty($fillable)
+                        ? $fillable
                         : array_diff(
                             array_diff(
-                                Schema::connection($this->getConnectionName())->getColumnListing($this->getTable()), 
+                                Schema::connection($this->getConnectionName())->getColumnListing($this->getTable()),
                                 $this->getGuarded()
-                            ), 
+                            ),
                             $this->getHidden()
                         );
 
@@ -71,35 +72,38 @@ trait Sanitizable {
      * @param  array   $data
      * @return array
      */
-    public function extraData(array $data) {
-        
+    public function extraData(array $data)
+    {
+
         $modelFillables = $this->sanitizeToModelFillable($data);
-        
+
         return array_diff_key($data, $modelFillables);
     }
 
 
     /**
-     * Get the sanitized data/attributes for this model 
+     * Get the sanitized data/attributes for this model
      *
      * @param  array   $data
      * @return array
      */
-    public static function sanitize(array $attributes = []) {
+    public static function sanitize(array $attributes = [])
+    {
 
-        return (new static)->sanitizeToModelFillable($attributes);
+        return (new static())->sanitizeToModelFillable($attributes);
     }
 
 
     /**
-     * Get the gibberish data/attributes for this model 
+     * Get the gibberish data/attributes for this model
      *
      * @param  array   $data
      * @return array
      */
-    public static function gibberish(array $attributes = []) {
+    public static function gibberish(array $attributes = [])
+    {
 
-        return (new static)->extraData($attributes);
+        return (new static())->extraData($attributes);
     }
 
 
@@ -109,9 +113,10 @@ trait Sanitizable {
      * @param  \Illuminate\Database\Query\Builder  $query
      * @return \Touhidurabir\ModelSanitize\Builder\SanitizableQueryBuilder|\Illuminate\Database\Eloquent\Builder|static
      */
-    public function newEloquentBuilder($query) {
+    public function newEloquentBuilder($query)
+    {
 
-        if ( static::$sanitizationEnabled ) {
+        if (static::$sanitizationEnabled) {
 
             return new SanitizableQueryBuilder($query);
         }

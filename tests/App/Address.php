@@ -6,8 +6,8 @@ use Touhidurabir\ModelSanitize\Sanitizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Address extends Model {
-
+class Address extends Model
+{
     use SoftDeletes;
 
     use Sanitizable;
